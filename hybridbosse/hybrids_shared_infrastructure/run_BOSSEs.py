@@ -1,11 +1,11 @@
 from hybridbosse.LandBOSSE.landbosse.landbosse_api.run import run_landbosse
 from hybridbosse.SolarBOSSE.main import run_solarbosse
-from hybridbosse.hybrids_shared_infrastructure.GridConnectionCost import hybrid_gridconnection
+from hybridbosse.HydrogenBOSSE.main import run_hydrogenbosse
 
 
 def run_BOSSEs(hybrids_input_dict):
     """
-    Runs 1) LandBOSSE, and 2) SolarBOSSE as mutually exclusive BOS models.
+    Runs 1) LandBOSSE, 2) SolarBOSSE 3) HydrogenBOSSE as mutually exclusive BOS models.
 
     """
     # <><><><><><><><><><><><><><><> RUNNING LandBOSSE API <><><><><><><><><><><><><><><><>
@@ -98,4 +98,11 @@ def run_BOSSEs(hybrids_input_dict):
         SolarBOSSE_results, detailed_results = run_solarbosse(solar_input_dict)
     # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><
 
-    return LandBOSSE_BOS_results, SolarBOSSE_results
+    # <><><><><><><><><><><><><><><> RUNNING HydrogenBOSSE API <><><><><><><><><><><><><><><><>
+
+    hydrogen_electrical_input = (solar_system_size + (hybrids_input_dict['num_turbines'] * hybrids_input_dict['turbine_rating_MW'])) * 1e3   #kW
+    H2_production_daily, HydrogenBOSSE_results, Hydrogen_detailed_results = run_hydrogenbosse(hydrogen_electrical_input)
+
+   # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><
+
+    return LandBOSSE_BOS_results, SolarBOSSE_results, HydrogenBOSSE_results, H2_production_daily

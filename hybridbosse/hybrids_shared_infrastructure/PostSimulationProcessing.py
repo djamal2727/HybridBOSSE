@@ -8,10 +8,11 @@ class PostSimulationProcessing:
     Collection of methods to parse through detailed BOS outputs and 'smart' combine the
     outputs of the BOS models into a single, Hybrid BOS detailed output.
     """
-    def __init__(self, hybrids_input_dict, LandBOSSE_BOS_results, SolarBOSSE_results):
+    def __init__(self, hybrids_input_dict, LandBOSSE_BOS_results, SolarBOSSE_results, HydrogenBOSSE_results):
         self.hybrids_input_dict = hybrids_input_dict
         self.LandBOSSE_BOS_results = LandBOSSE_BOS_results
         self.SolarBOSSE_results = SolarBOSSE_results
+        self.HydrogenBOSSE_results = HydrogenBOSSE_results
         self.hybrid_gridconnection_usd = self.hybrid_gridconnection_usd()
         self.hybrid_substation_usd = self.hybrid_substation_usd()
         self.site_facility_usd = self.site_facility_hybrid()
@@ -26,7 +27,8 @@ class PostSimulationProcessing:
         """
 
         total_hybrids_BOS_USD = self.LandBOSSE_BOS_results['total_bos_cost'] + \
-                                self.SolarBOSSE_results['total_bos_cost']
+                                self.SolarBOSSE_results['total_bos_cost'] \
+                               + self.HydrogenBOSSE_results['total_bos_cost']
 
         if self.hybrids_input_dict['wind_plant_size_MW'] == 0:
             self.LandBOSSE_BOS_results['total_gridconnection_cost'] = 0

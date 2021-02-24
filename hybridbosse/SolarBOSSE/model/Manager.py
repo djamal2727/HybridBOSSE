@@ -1,4 +1,5 @@
-from .RackingSystemInstallation import RackingSystemInstallation
+
+
 from .SitePreparationCost import SitePreparationCost
 from .SubstationCost import SubstationCost
 from .ManagementCost import ManagementCost
@@ -6,6 +7,7 @@ from .GridConnectionCost import GridConnectionCost
 from .FoundationCost import FoundationCost
 from .InverterTransformerErection import InverterTransformerErection
 from .CollectionCost import CollectionCost
+from .RackingSystemInstallation import RackingSystemInstallation
 
 
 class Manager:

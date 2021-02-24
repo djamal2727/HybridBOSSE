@@ -311,13 +311,13 @@ class CollectionCost(CostModule):
             volume_order_discount_multiplier = 1
 
         pv_wire_DC_specs = self.input_dict['pv_wire_DC_specs']
-        if circuit_type is 'source_circuit':
+        if circuit_type == 'source_circuit':
             cost_usd_lf = pv_wire_DC_specs.loc[
                 pv_wire_DC_specs['Size (AWG or kcmil)'] == 10, 'Cost (USD/LF)']
 
             cost_usd_lf = cost_usd_lf.iloc[0]
 
-        elif circuit_type is 'output_circuit':
+        elif circuit_type == 'output_circuit':
             if circuit_amps >= 175:
                 cost_usd_lf = \
                     pv_wire_DC_specs.loc[
