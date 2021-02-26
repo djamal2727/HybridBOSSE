@@ -27,8 +27,10 @@ class PostSimulationProcessing:
         """
 
         total_hybrids_BOS_USD = self.LandBOSSE_BOS_results['total_bos_cost'] + \
-                                self.SolarBOSSE_results['total_bos_cost'] \
-                               + self.HydrogenBOSSE_results['total_bos_cost']
+                                self.SolarBOSSE_results['total_bos_cost']
+
+        if self.hybrids_input_dict['hybrid_hydrogen_plant']:
+            total_hybrids_BOS_USD = total_hybrids_BOS_USD + self.HydrogenBOSSE_results['total_bos_cost']
 
         if self.hybrids_input_dict['wind_plant_size_MW'] == 0:
             self.LandBOSSE_BOS_results['total_gridconnection_cost'] = 0
@@ -42,12 +44,13 @@ class PostSimulationProcessing:
             total_hybrids_BOS_USD = total_hybrids_BOS_USD + \
                                     self.hybrid_gridconnection_usd + \
                                     self.hybrid_substation_usd - \
-                                    self.LandBOSSE_BOS_results['total_gridconnection_cost'] - \
-                                    self.SolarBOSSE_results['total_transdist_cost'] - \
                                     self.LandBOSSE_BOS_results['total_substation_cost'] - \
-                                    self.SolarBOSSE_results['substation_cost']
-
-        return total_hybrids_BOS_USD
+                                    self.SolarBOSSE_results['substation_cost'] - \
+                                    self.LandBOSSE_BOS_results['total_gridconnection_cost'] - \
+                                    self.SolarBOSSE_results['total_transdist_cost']
+            if self.hybrids_input_dict['hybrid_hydrogen_plant']:
+                total_hybrids_BOS_USD = total_hybrids_BOS_USD - self.hybrid_gridconnection_usd
+            return total_hybrids_BOS_USD
 
     def hybrid_BOS_usd_watt(self):
         if self.SolarBOSSE_results['total_bos_cost'] == 0:

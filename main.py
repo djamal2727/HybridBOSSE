@@ -14,11 +14,17 @@ def run_hybrid_BOS(hybrids_input_dict):
     # Store a copy of both solar only and wind only outputs dictionaries:
     wind_only_BOS = wind_BOS.copy()
     solar_only_BOS = solar_BOS.copy()
-    hydrogen_only_BOS = hydrogen_BOS.copy()
+
+    if hybrids_input_dict['hybrid_hydrogen_plant']:
+        hydrogen_only_BOS = hydrogen_BOS.copy()
+    else:
+        hydrogen_only_BOS = 0
 
     print('wind_only_BOS at ', hybrids_input_dict['wind_plant_size_MW'], ' MW: ' , wind_BOS)
     print('solar_only_BOS ', hybrids_input_dict['solar_system_size_MW_DC'], ' MW: ' , solar_BOS)
-    print('hydrogen_only_BOS ', hybrids_input_dict['solar_system_size_MW_DC'] + (hybrids_input_dict['num_turbines'] * hybrids_input_dict['turbine_rating_MW']) , \
+
+    if hybrids_input_dict['hybrid_hydrogen_plant']:
+        print('hydrogen_only_BOS ', hybrids_input_dict['solar_system_size_MW_DC'] + (hybrids_input_dict['num_turbines'] * hybrids_input_dict['turbine_rating_MW']) , \
           ' MW: ' , hydrogen_BOS)
 
     if hybrids_input_dict['wind_plant_size_MW'] > 0:
@@ -35,15 +41,21 @@ def run_hybrid_BOS(hybrids_input_dict):
     else:
         solar_BOS['total_management_cost'] = 0
 
-    # BOS of Hydrogen only power plant:
-    print('Hydrogen BOS (USD/kgH2): ', hydrogen_BOS['total_bos_cost']/(H2_production_daily*365))
+    if hybrids_input_dict['hybrid_hydrogen_plant']:
+        # BOS of Hydrogen only power plant:
+        print('Hydrogen BOS (USD/kgH2): ', hydrogen_BOS['total_bos_cost']/(H2_production_daily*365))
 
     results = dict()
     results['hybrid'] = dict()
     hybrid_BOS = PostSimulationProcessing(hybrids_input_dict, wind_BOS, solar_BOS, hydrogen_BOS)
     results['hybrid']['hybrid_BOS_usd'] = hybrid_BOS.hybrid_BOS_usd
     results['hybrid']['hybrid_BOS_usd_watt'] = hybrid_BOS.hybrid_BOS_usd_watt
-    results['hybrid']['hybrid_gridconnection_usd'] = hybrid_BOS.hybrid_gridconnection_usd
+
+    if hybrids_input_dict['hybrid_hydrogen_plant']:
+        results['hybrid']['hybrid_gridconnection_usd'] = 0
+    else:
+        results['hybrid']['hybrid_gridconnection_usd'] = hybrid_BOS.hybrid_gridconnection_usd
+
     results['hybrid']['hybrid_substation_usd'] = hybrid_BOS.hybrid_substation_usd
 
     results['hybrid']['hybrid_management_development_usd'] = wind_BOS['total_management_cost'] + \
@@ -97,7 +109,7 @@ yaml_file_path = dict()
 
 
 
-def display_results(hybrid_dict, wind_only_dict, solar_only_dict, hydrogen_only_dict):
+def display_results(hybrid_dict, wind_only_dict, solar_only_dict, hydrogen_only_dict = None):
 
     hybrids_df = pd.DataFrame(hybrid_dict['hybrid'].items(), columns=['Type', 'USD'])
 
@@ -122,26 +134,30 @@ def display_results(hybrid_dict, wind_only_dict, solar_only_dict, hydrogen_only_
     wind_only_bos_df = pd.DataFrame(
         wind_only_bos.items(), columns=['Wind Only BOS Component', 'USD'])
 
-    hydrogen_only_bos = dict()
-    #hydrogen_only_bos['scaled_installed_stack_capital_cost'] = hydrogen_only_dict['scaled_installed_stack_capital_cost']
-    hydrogen_only_bos['scaled_installed_mechanical_BoP_cost'] = hydrogen_only_dict['scaled_installed_mechanical_BoP_cost']
-    hydrogen_only_bos['scaled_installed_electrical_BoP_cost'] = hydrogen_only_dict['scaled_installed_electrical_BoP_cost']
-    hydrogen_only_bos['site_preparation'] = hydrogen_only_dict['site_preparation']
-    hydrogen_only_bos['engineering_design'] = hydrogen_only_dict['engineering_design']
-    hydrogen_only_bos['project_contingency'] = hydrogen_only_dict['project_contingency']
-    hydrogen_only_bos['upfront_permitting_cost'] = hydrogen_only_dict['upfront_permitting_cost']
-    hydrogen_only_bos['land_cost'] = hydrogen_only_dict['land_cost']
-    #hydrogen_only_bos['labor_cost'] = hydrogen_only_dict['labor_cost']
-   # hydrogen_only_bos['licensing_permits_fees'] = hydrogen_only_dict['licensing_permits_fees']
-    #hydrogen_only_bos['propertytax_insurancecost'] = hydrogen_only_dict['propertytax_insurancecost']
+    if hydrogen_only_dict:
+        hydrogen_only_bos = dict()
+        #hydrogen_only_bos['scaled_installed_stack_capital_cost'] = hydrogen_only_dict['scaled_installed_stack_capital_cost']
+        hydrogen_only_bos['scaled_installed_mechanical_BoP_cost'] = hydrogen_only_dict['scaled_installed_mechanical_BoP_cost']
+        hydrogen_only_bos['scaled_installed_electrical_BoP_cost'] = hydrogen_only_dict['scaled_installed_electrical_BoP_cost']
+        hydrogen_only_bos['site_preparation'] = hydrogen_only_dict['site_preparation']
+        hydrogen_only_bos['engineering_design'] = hydrogen_only_dict['engineering_design']
+        hydrogen_only_bos['project_contingency'] = hydrogen_only_dict['project_contingency']
+        hydrogen_only_bos['upfront_permitting_cost'] = hydrogen_only_dict['upfront_permitting_cost']
+        hydrogen_only_bos['land_cost'] = hydrogen_only_dict['land_cost']
+        #hydrogen_only_bos['labor_cost'] = hydrogen_only_dict['labor_cost']
+        #hydrogen_only_bos['licensing_permits_fees'] = hydrogen_only_dict['licensing_permits_fees']
+        #hydrogen_only_bos['propertytax_insurancecost'] = hydrogen_only_dict['propertytax_insurancecost']
+        hydrogen_only_bos_df = pd.DataFrame(
+            hydrogen_only_bos.items(), columns=['Hydrogen Only BOS Component', 'USD'])
 
-    hydrogen_only_bos_df = pd.DataFrame(
-        hydrogen_only_bos.items(), columns=['Hydrogen Only BOS Component', 'USD'])
+    else:
+        hydrogen_only_bos = 0
 
     print(hybrids_df)
     print(solar_only_bos_df)
     print(wind_only_bos_df)
-    print(hydrogen_only_bos_df)
+    if hydrogen_only_dict:
+        print(hydrogen_only_bos_df)
 
     return hybrids_df, hybrids_solar_df, hybrids_wind_df, solar_only_bos, wind_only_bos, hydrogen_only_bos
 

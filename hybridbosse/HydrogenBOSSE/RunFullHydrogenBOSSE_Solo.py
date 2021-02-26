@@ -6,7 +6,7 @@ from hybridbosse.HydrogenBOSSE.model.Manager import Manager
 def run_hydrogenbosse():
     input_output_path = os.path.dirname(__file__)
 
-    master_input = pd.read_excel(r'C:\Users\DJAMAL\Documents\HybridBOSSE\hybridbosse\HydrogenBOSSE\project_list_example.xlsx', index = False)
+    master_input = pd.read_excel(r'C:\Users\DJAMAL\Documents\GitHub\HybridBOSSE\hybridbosse\HydrogenBOSSE\project_list.xlsx', index = False)
     output_dict = dict()
 
     # Manager class (1) manages the distribution of inout data for all modules
@@ -17,8 +17,9 @@ def run_hydrogenbosse():
     # results dictionary that gets returned by this function:
     results = dict()
 
-    results['total_bos_cost'] = output_dict['total_bos_cost'] + output_dict['scaled_installed_stack_capital_cost'] + output_dict['labor_cost'] + \
+    output_dict['total_bos_cost'] = output_dict['total_bos_cost'] + output_dict['scaled_installed_stack_capital_cost'] + output_dict['labor_cost'] + \
                                 output_dict['licensing_permits_fees'] + output_dict['propertytax_insurancecost']
+    results['total_bos_cost'] = output_dict['total_bos_cost']
     results['scaled_installed_stack_capital_cost'] = output_dict['scaled_installed_stack_capital_cost']
     results['scaled_installed_mechanical_BoP_cost'] = output_dict['scaled_installed_mechanical_BoP_cost']
     results['scaled_installed_electrical_BoP_cost'] = output_dict['scaled_installed_electrical_BoP_cost']
@@ -52,9 +53,9 @@ bos_capex = bos_capex_total / (H2_production_daily*365)
 print('BOS CAPEX (USD/kgH2) = ' + str(round(bos_capex, 4)))
 print('')
 print('')
-
+detailed_results.pop('total_bos_cost')
 data = pd.DataFrame(list(detailed_results.items()), columns= ['Category', 'Cost'])
-data.loc['TOTAL']= data.sum(numeric_only=True, axis=0)
+data.loc['TOTAL', 'Cost']= BOS_results['total_bos_cost']
 
 print(data)
 

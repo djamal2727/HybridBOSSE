@@ -99,10 +99,12 @@ def run_BOSSEs(hybrids_input_dict):
     # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><
 
     # <><><><><><><><><><><><><><><> RUNNING HydrogenBOSSE API <><><><><><><><><><><><><><><><>
-
-    hydrogen_electrical_input = (solar_system_size + (hybrids_input_dict['num_turbines'] * hybrids_input_dict['turbine_rating_MW'])) * 1e3   #kW
-    H2_production_daily, HydrogenBOSSE_results, Hydrogen_detailed_results = run_hydrogenbosse(hydrogen_electrical_input)
-
+    if hybrids_input_dict['hybrid_hydrogen_plant']:
+        hydrogen_electrical_input = (solar_system_size + (hybrids_input_dict['num_turbines'] * hybrids_input_dict['turbine_rating_MW'])) * 1e3   #kW
+        H2_production_daily, HydrogenBOSSE_results, Hydrogen_detailed_results = run_hydrogenbosse(hydrogen_electrical_input)
+    else:
+        HydrogenBOSSE_results = 0
+        H2_production_daily = 0
    # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><
 
     return LandBOSSE_BOS_results, SolarBOSSE_results, HydrogenBOSSE_results, H2_production_daily

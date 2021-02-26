@@ -6,7 +6,7 @@ from hybridbosse.HydrogenBOSSE.model.Manager import Manager
 def run_hydrogenbosse(electrical_input):
     input_output_path = os.path.dirname(__file__)
 
-    master_input = pd.read_excel(r'C:\Users\DJAMAL\Documents\HybridBOSSE\hybridbosse\HydrogenBOSSE\project_list_example.xlsx', index = False)
+    master_input = pd.read_excel(r'C:\Users\DJAMAL\Documents\GitHub\HybridBOSSE\hybridbosse\HydrogenBOSSE\project_list.xlsx', index = False)
     master_input.loc[0,'H2 Plant Electrical Input (kW)'] = electrical_input
     #master_input.loc[0,'cap_factor'] = 0.4
     output_dict = dict()
